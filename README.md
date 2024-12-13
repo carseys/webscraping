@@ -9,3 +9,5 @@ Packages used:
 * pandas
 * requests
 * tqdm
+
+Note: only the file with 'class' in name is kept up to date.
