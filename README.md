@@ -10,4 +10,4 @@ Packages used:
 * requests
 * tqdm
 
-Note: only the file with 'class' in name is kept up to date.
+Note: alimarket-scraper.ipynb is not kept up to date and does not contain all functions. Please use alimarket-scraper-class.ipynb, which includes sample code for usage in lower cells.
