@@ -67,6 +67,7 @@ class EconomistaScrape:
         """
         self.link_list = []
         header_index = 0
+        print("Beginning business search.")
 
         for i, company in enumerate(tqdm(list(self.csv_entries['company names']))):
             search_term = self.url_search_term(company)
@@ -106,6 +107,7 @@ class EconomistaScrape:
                 self.link_list.append('requests issue')
 
         print(f'The cooldown this time was {n} seconds.')
+        print("Completed business search.")
         return None
 
     def cleanup_found_links_rotate(self) -> None:
@@ -118,6 +120,7 @@ class EconomistaScrape:
             DataFrame of companies from csv import.
         'link_list' : list of links found from 'business_search' 
         """
+        print("Cleaning up links found.")
         self.entries_with_info = self.csv_entries.copy()
 
         self.entries_with_info.reset_index(drop=True,inplace=True)
@@ -126,6 +129,7 @@ class EconomistaScrape:
         self.entries_with_info.drop(index=excluded_rows, inplace=True)
         self.entries_with_info = self.entries_with_info.dropna(subset='found_links')
         self.entries_with_info.reset_index(drop=True,inplace=True)
+        print("Link results cleaned.")
     
         return None
     
@@ -141,6 +145,7 @@ class EconomistaScrape:
         urls_found = []
         emails_found = []
         header_index = 0
+        print("Scraping for contact information.")
 
         for i, link in enumerate(tqdm(self.entries_with_info['found_links'])):
             mini_header_dict = {
@@ -172,6 +177,7 @@ class EconomistaScrape:
 
         self.info_dict = {'phones': phonenumbers_found, 'urls': urls_found, 'emails': emails_found}
         print(f'The cooldown this time was {n} seconds.')
+        print("Contact information scraped.")
         return None
 
     def add_found_info(self)-> None:
@@ -181,6 +187,7 @@ class EconomistaScrape:
         Parameters
         ----------
         """
+        print("Compiling information into df and cleaning results.")
         phone_list = self.info_dict['phones']
         url_list = self.info_dict['urls']
         email_list = self.info_dict['emails']
@@ -202,11 +209,29 @@ class EconomistaScrape:
         no_info_indices = self.entries_with_info.loc[(self.entries_with_info['emails']=='not found') & (self.entries_with_info['phones']=='not found') & (self.entries_with_info['urls']=='not found')].index
         self.entries_with_info.drop(index = no_info_indices, inplace=True)
         self.entries_with_info.reset_index(drop=True, inplace=True)
-
+        print("Information compiled and cleaned.")
         return None
     
-    def to_csv(self, newfilename: str)-> None:
+    def export_to_csv(self, newfilename: str)-> None:
         self.entries_with_info.to_csv(f'{newfilename}.csv')
+        print("Successfully exported csv.")
         return None
     
-    def scrape_through(self):
+    def scrape_through(self, filename: str, n: float, newfilename: str):
+        """
+        Runs from start to end through the scraping process.
+
+        Parameters
+        ----------
+        'filename' : str
+        'n' : float
+        'newfilename' : str
+        """
+
+        self.setup(filename=filename)
+        self.business_search_rotate(n=n)
+        self.cleanup_found_links_rotate()
+        self.get_contact_info_rotate(n=n)
+        self.add_found_info()
+        self.export_to_csv(newfilename=newfilename)
+        
