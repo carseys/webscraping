@@ -20,13 +20,21 @@ class EconomistaScrape:
     Functions
     ---------
     setup
-        imports jsons, csv (csv as specified by filename parameter)
+        Imports jsons, csv (csv as specified by filename parameter).
     url_search_term
-        takes business names and formats for use in URL
+        Takes business names and formats for use in URL.
     business_search_rotate
-        searches business names on baseurl website.
+        Searches business names on baseurl website.
     cleanup_found_links_rotate
-        adds column of found links and removes error rows and 
+        Adds column of found links and removes error rows.
+    get_contact_info_rotate
+        Scrapes pages of found links for contact information.
+    add_found_info
+        Compiles new info into existing df to match businesses and info, and fixes some formatting issues.
+    export_to_csv
+        As the name says.
+    scrape_through
+        Runs all the above functions.
     """
 
     def __init__(self):
