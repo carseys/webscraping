@@ -33,6 +33,10 @@ class EconomistaScrape:
         self.baseurl = 'https://empresite.eleconomista.es/Actividad/'
 
         self.setup_flag = False
+        self.business_search_flag = False
+        self.cleanup_found_links_flag = False
+        self.get_contact_info_flag = False
+        self.add_info_flag = False
 
     def setup(self, filename: str)-> None:
         """
@@ -105,7 +109,7 @@ class EconomistaScrape:
                 time.sleep(n)
             except:
                 self.link_list.append('requests issue')
-
+        self.business_search_flag = True
         print(f'The cooldown this time was {n} seconds.')
         print("Completed business search.")
         return None
@@ -120,6 +124,8 @@ class EconomistaScrape:
             DataFrame of companies from csv import.
         'link_list' : list of links found from 'business_search' 
         """
+        assert self.business_search_flag, "Please run business_search_rotate before cleanup_found_links_rotate."
+
         print("Cleaning up links found.")
         self.entries_with_info = self.csv_entries.copy()
 
@@ -129,6 +135,7 @@ class EconomistaScrape:
         self.entries_with_info.drop(index=excluded_rows, inplace=True)
         self.entries_with_info = self.entries_with_info.dropna(subset='found_links')
         self.entries_with_info.reset_index(drop=True,inplace=True)
+        self.cleanup_found_links_flag = True
         print("Link results cleaned.")
     
         return None
@@ -141,6 +148,7 @@ class EconomistaScrape:
         ----------
         'df' : pd.DataFrame
         """
+        assert self.cleanup_found_links_flag, "Please run cleanup_found_links_rotate before get_contact_info_rotate."
         phonenumbers_found = []
         urls_found = []
         emails_found = []
@@ -176,6 +184,7 @@ class EconomistaScrape:
             time.sleep(n)
 
         self.info_dict = {'phones': phonenumbers_found, 'urls': urls_found, 'emails': emails_found}
+        self.get_contact_info_flag = True
         print(f'The cooldown this time was {n} seconds.')
         print("Contact information scraped.")
         return None
@@ -188,6 +197,8 @@ class EconomistaScrape:
         ----------
         """
         print("Compiling information into df and cleaning results.")
+        assert self.get_contact_info_flag, "Please run get_contact_info_rotate before add_found_info."
+
         phone_list = self.info_dict['phones']
         url_list = self.info_dict['urls']
         email_list = self.info_dict['emails']
@@ -209,10 +220,12 @@ class EconomistaScrape:
         no_info_indices = self.entries_with_info.loc[(self.entries_with_info['emails']=='not found') & (self.entries_with_info['phones']=='not found') & (self.entries_with_info['urls']=='not found')].index
         self.entries_with_info.drop(index = no_info_indices, inplace=True)
         self.entries_with_info.reset_index(drop=True, inplace=True)
+        self.add_info_flag = True
         print("Information compiled and cleaned.")
         return None
     
     def export_to_csv(self, newfilename: str)-> None:
+        assert self.add_info_flag, "Please run add_found_info before export_to_csv."
         self.entries_with_info.to_csv(f'{newfilename}.csv')
         print("Successfully exported csv.")
         return None
