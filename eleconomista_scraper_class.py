@@ -141,7 +141,7 @@ class EconomistaScrape:
         self.entries_with_info['found_links'] = pd.DataFrame(self.link_list, columns=['found_links'])
         excluded_rows = self.entries_with_info[(self.entries_with_info['found_links']=='possible 404 not found') | (self.entries_with_info['found_links']=='reset but result issue') | (self.entries_with_info['found_links']=='429 issue') | (self.entries_with_info['found_links']=='requests issue')].index
         self.entries_with_info.drop(index=excluded_rows, inplace=True)
-        self.entries_with_info = self.entries_with_info.drop_duplicates(subset=['found_links']) #mutiplicities of url found are generally because of search issues
+        self.entries_with_info = self.entries_with_info.drop_duplicates(subset=['found_links'], keep=False) #mutiplicities of url found are generally because of search issues
         self.entries_with_info = self.entries_with_info.dropna(subset='found_links')
         self.entries_with_info.reset_index(drop=True,inplace=True)
         self.cleanup_found_links_flag = True
