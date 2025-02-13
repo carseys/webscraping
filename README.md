@@ -17,3 +17,4 @@ A set of python classes that scrape business listing websites.
 
 ##### Notes:
 * The .json files contain headers for use with requests library. These are indexed '0' to '49'.
+* The .gitignore is just to ignore csv files in the directory. A csv file is necessary as input for eleconomista webscraper.
