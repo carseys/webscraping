@@ -78,6 +78,7 @@ class EconomistaScrape:
             number of seconds to wait after each iteration. Recommended to set 2 but higher values don't seem to improve performance.
         """
         self.link_list = []
+        self.result_names = []
         header_index = 0
         print("Beginning business search.")
 
@@ -100,23 +101,31 @@ class EconomistaScrape:
                         
                         # if first_result.split(' ')[0]==company.split(' ')[0]:
                         url_results = soup.find_all('a', href=True, title=lambda value: value and value.startswith("Ver perfil de"))[0]['href']
+                        name_result = soup.find_all('a', href=True, title=lambda value: value and value.startswith("Ver perfil de"))[0].text
                         self.link_list.append(url_results)
+                        self.result_names.append(name_result)
                     elif str(r.status_code)== '429':
                         header_index = header_index + 1
                         try:
                             r = requests.get(search_url,headers=mini_header_dict, timeout=30)
                             soup = BeautifulSoup(r.content)
                             url_results = soup.find_all('a', href=True, title=lambda value: value and value.startswith("Ver perfil de"))[0]['href']
+                            name_result = soup.find_all('a', href=True, title=lambda value: value and value.startswith("Ver perfil de"))[0].text
                             self.link_list.append(url_results)
+                            self.result_names.append(name_result)
                         except:
                             self.link_list.append('reset but result issue')
+                            self.result_names.append('reset but result issue')
                     else:
                         self.link_list.append('possible 404 not found')
+                        self.result_names.append('possible 404 not found')
                 except IndexError:
                     self.link_list.append('no results found')
+                    self.result_names.append('no results found')
                 time.sleep(n)
             except:
                 self.link_list.append('requests issue')
+                self.result_names.append('requests issue')
         self.business_search_flag = True
         print(f'The cooldown this time was {n} seconds.')
         print("Completed business search.")
@@ -139,6 +148,8 @@ class EconomistaScrape:
 
         self.entries_with_info.reset_index(drop=True,inplace=True)
         self.entries_with_info['found_links'] = pd.DataFrame(self.link_list, columns=['found_links'])
+        self.entries_with_info['result_names'] = pd.DataFrame(self.result_names, columns=['result_names'])
+        
         excluded_rows = self.entries_with_info[(self.entries_with_info['found_links']=='possible 404 not found') | (self.entries_with_info['found_links']=='reset but result issue') | (self.entries_with_info['found_links']=='429 issue') | (self.entries_with_info['found_links']=='requests issue')].index
         self.entries_with_info.drop(index=excluded_rows, inplace=True)
         self.entries_with_info = self.entries_with_info.drop_duplicates(subset=['found_links'], keep=False) #mutiplicities of url found are generally because of search issues
