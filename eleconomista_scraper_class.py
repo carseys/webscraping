@@ -234,7 +234,7 @@ class EconomistaScrape:
         # Format corrections:
         self.entries_with_info['urls'] = self.entries_with_info['urls'].apply(lambda x: x[2:] if x.startswith('//')==True else x)
         self.entries_with_info['emails'] = self.entries_with_info['emails'].apply(lambda x: x.split(':')[1] if x.startswith('mailto')==True else x)
-        self.entries_with_info.drop(columns=['found_links'],inplace=True)
+        # self.entries_with_info.drop(columns=['found_links'],inplace=True)
 
         # Removing companies w no info:
         no_info_indices = self.entries_with_info.loc[(self.entries_with_info['emails']=='not found') & (self.entries_with_info['phones']=='not found') & (self.entries_with_info['urls']=='not found')].index
