@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from tqdm import tqdm
 
-# Author: Simone Carsey
 
 class AMScrape:
     """Class that scrapes business data from alimarket.es.

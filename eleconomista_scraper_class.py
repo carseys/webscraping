@@ -6,8 +6,6 @@ from collections import Counter
 import time
 import json
 
-# Author: Simone Carsey
-
 
 class EconomistaScrape:
     """
