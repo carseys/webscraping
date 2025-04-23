@@ -10,5 +10,5 @@ A set of python classes that scrape business listing websites.
 * See `.ipynb` files for sample code on usage. For example, `alimarket-scraper-class.ipynb` contains sample code for usage in lower cells.
 
 ##### Notes:
-* The .json files contain headers for use with requests library. These are indexed `'0'` to `'49'`.
-* The .gitignore is just to ignore `.csv` files in the directory. A `.csv` file is necessary as input for eleconomista webscraper.
+* The `.json` files contain headers for use with requests library. These are indexed `'0'` to `'49'`.
+* The `.gitignore` is just to ignore `.csv` files in the directory. A `.csv` file is necessary as input for eleconomista webscraper.
